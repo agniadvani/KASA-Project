@@ -6,7 +6,9 @@ const launch = {
     mission: "Kepler Exploration X",
     rocket: "Explorer IS1",
     destination: "Kepler-452 b",
-    customer: ['NASA', 'NOAA']
+    customer: ['NASA', 'NOAA'],
+    upcoming: true,
+    success: true
 }
 
 launches.set(launch.flightNumber, launch)
