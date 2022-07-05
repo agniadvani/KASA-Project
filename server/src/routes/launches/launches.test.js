@@ -32,6 +32,25 @@ describe('Test POST /launches', () => {
         expect(response.body).toMatchObject(launchDataWithoutDate)
         expect(requestDate).toBe(responseDate)
     })
-    test('It should respond with 400 "Incomplete request body"', () => { })
-    test('It should respond with 400 "Incomplete date format"', () => { })
+    test('It should respond with 400 "Incomplete request body"', async () => {
+        const response = await request(app)
+            .post("/launches")
+            .send(launchDataWithoutDate)
+            .expect(400)
+
+        expect(response.body).toStrictEqual({ error: "Incomplete request body." })
+    })
+    test('It should respond with 400 "Invalid date format"', async () => {
+        const response = await request(app)
+            .post("/launches")
+            .send({
+                launchDate: "Decdsflkdfsjl",
+                mission: "ANIL1506",
+                rocket: "Explorer IS1",
+                target: "Kepler-452 b",
+            })
+            .expect(400)
+
+        expect(response.body).toStrictEqual({ error: "Invalid launchDate format." })
+    })
 })
