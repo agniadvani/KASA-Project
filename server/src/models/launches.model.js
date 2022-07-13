@@ -8,7 +8,7 @@ const launch = {
     mission: "ANIL1506",
     rocket: "Explorer IS1",
     target: "Kepler-452 b",
-    customer: ['NASA', 'NOAA'],
+    customers: ['NASA', 'NOAA'],
     upcoming: true,
     success: true
 }
@@ -28,7 +28,7 @@ function addNewLaunch(launch) {
     const newLaunch = Object.assign(launch,
         {
             flightNumber: latestFlightNumber,
-            customer: ['NASA', 'NOAA'],
+            customers: ['NASA', 'NOAA'],
             upcoming: true,
             success: true
         })
