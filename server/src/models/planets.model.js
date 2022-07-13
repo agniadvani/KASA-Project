@@ -28,7 +28,6 @@ function loadPlanetData() {
             .on('end', async () => {
                 try {
                     const countHabitablePlanets = (await getAllPlanets()).length
-                    console.log(await getAllPlanets())
                     console.log(`${countHabitablePlanets} habitable planets found!`);
                     resolve()
                 } catch (e) {
@@ -40,7 +39,7 @@ function loadPlanetData() {
 
 async function getAllPlanets() {
     try {
-         return await planets.find({})
+        return await planets.find({}, { "_id": 0, "__v": 0 })
     } catch (e) {
         console.error("Could not find planet data", e)
     }

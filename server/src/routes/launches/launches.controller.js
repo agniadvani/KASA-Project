@@ -1,10 +1,10 @@
 const { getAllLaunches, addNewLaunch, abortByLaunchId, launchExists } = require('../../models/launches.model')
 
-function httpGetAllLaunches(req, res) {
-    return res.status(200).json(getAllLaunches())
+async function httpGetAllLaunches(req, res) {
+    return res.status(200).json(await getAllLaunches())
 }
 
-function httpAddNewLaunch(req, res) {
+async function httpAddNewLaunch(req, res) {
 
     if (!req.body.mission || !req.body.launchDate || !req.body.rocket || !req.body.target) {
         return res.status(400).json({ error: "Incomplete request body." })
@@ -12,8 +12,13 @@ function httpAddNewLaunch(req, res) {
     if (isNaN(Date.parse(req.body.launchDate))) {
         return res.status(400).json({ error: "Invalid launchDate format." })
     }
+    try {
+        const response = await scheduleNewLaunch(req.body)
+        return res.status(201).json(response)
+    } catch (e) {
+        return res.status(400).json({ error: e })
+    }
 
-    return res.status(201).json(addNewLaunch(req.body))
 
 }
 

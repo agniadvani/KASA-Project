@@ -1,7 +1,8 @@
-// const launches = require("./launches.mongo")
+const launchDB = require("./launches.mongo")
+const planets = require("./planets.mongo")
 const launches = new Map()
 
-let latestFlightNumber = 100
+const DEFAULT_FLIGHT_NUMBER = 100
 
 const launch = {
     flightNumber: 100,
@@ -14,27 +15,39 @@ const launch = {
     success: true
 }
 
-launches.set(launch.flightNumber, launch)
+saveLaunch(launch)
+
+// launches.set(launch.flightNumber, launch)
 function launchExists(id) {
     id = Number.parseInt(id)
     return launches.has(id)
 }
-function getAllLaunches() {
-    return Array.from(launches.values())
+async function getAllLaunches() {
+    try {
+        return await launchDB.find({}, { "_id": 0, "__v": 0 })
+    } catch (e) {
+        console.error("Could not find launches", e)
+    }
+
 }
 
-function addNewLaunch(launch) {
-    latestFlightNumber++
-    launch.launchDate = new Date(launch.launchDate)
-    const newLaunch = Object.assign(launch,
-        {
-            flightNumber: latestFlightNumber,
-            customers: ['NASA', 'NOAA'],
-            upcoming: true,
-            success: true
-        })
-    launches.set(newLaunch.flightNumber, newLaunch)
-    return newLaunch
+async function scheduleNewLaunch(launch) {
+    try {
+        const latestFlightNumber = await getLatestFlightNumber() + 1
+
+        launch.launchDate = new Date(launch.launchDate)
+        const newLaunch = Object.assign(launch,
+            {
+                flightNumber: latestFlightNumber,
+                customers: ['NASA', 'NOAA'],
+                upcoming: true,
+                success: true
+            })
+        await saveLaunch(newLaunch)
+        return newLaunch
+    } catch (e) {
+        console.error("Could not add new launch", e)
+    }
 }
 
 function abortByLaunchId(launchId) {
@@ -45,9 +58,32 @@ function abortByLaunchId(launchId) {
     return abort
 }
 
+async function saveLaunch(launch) {
+    const planet = await planets.findOne({ keplerName: launch.target })
+
+    if (!planet) {
+        throw new Error("Planet does not exist in DB")
+    }
+
+    await launchDB.updateOne({
+        flightNumber: launch.flightNumber
+    }, launch, { upsert: true })
+}
+
+async function getLatestFlightNumber() {
+    const latestLaunch = await launchDB
+        .findOne()
+        .sort('-flightNumber');
+
+    if (!latestLaunch) {
+        return DEFAULT_FLIGHT_NUMBER
+    }
+    return latestLaunch.flightNumber
+}
+
 module.exports = {
     getAllLaunches,
-    addNewLaunch,
+    scheduleNewLaunch,
     abortByLaunchId,
     launchExists
 }
