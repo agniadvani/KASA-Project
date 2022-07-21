@@ -18,9 +18,13 @@ const launch = {
 saveLaunch(launch)
 
 // launches.set(launch.flightNumber, launch)
-function launchExists(id) {
-    id = Number.parseInt(id)
-    return launches.has(id)
+async function launchExists(launchId) {
+    try {
+        return await launchDB.findOne({ flightNumber: launchId })
+    } catch (e) {
+        console.error("Error: ", e)
+    }
+
 }
 async function getAllLaunches() {
     try {
@@ -50,12 +54,19 @@ async function scheduleNewLaunch(launch) {
     }
 }
 
-function abortByLaunchId(launchId) {
-    launchId = Number.parseInt(launchId)
-    const abort = launches.get(launchId)
-    abort.upcoming = false
-    abort.success = false
-    return abort
+async function abortByLaunchId(launchId) {
+    try {
+        launchId = Number.parseInt(launchId)
+        const aborted = await launchDB.updateOne({
+            flightNumber: launchId
+        }, {
+            upcoming: false,
+            success: false
+        })
+        return aborted.acknowledged === true && aborted.modifiedCount === 1
+    } catch (e) {
+        console.error("Error: ", e)
+    }
 }
 
 async function saveLaunch(launch) {
@@ -65,7 +76,7 @@ async function saveLaunch(launch) {
         throw new Error("Planet does not exist in DB")
     }
 
-    await launchDB.updateOne({
+    await launchDB.findOneAndUpdate({
         flightNumber: launch.flightNumber
     }, launch, { upsert: true })
 }

@@ -22,14 +22,27 @@ async function httpAddNewLaunch(req, res) {
 
 }
 
-function httpAbortLaunch(req, res) {
-    if (!launchExists(req.params.id)) {
-        return res.status(400).json({
-            message: "Could not find launch with id " + req.params.id
+async function httpAbortLaunch(req, res) {
+    try {
+        const exist = await launchExists(req.params.id)
+        if (!exist) {
+            return res.status(400).json({
+                error: "Could not find launch with id " + req.params.id
+            })
+        }
+        const aborted = await abortByLaunchId(req.params.id)
+        if (!aborted) {
+            return res.status(400).json({
+                error: "Error aborting launch."
+            })
+        }
+        return res.status(200).json({
+            ok: true
         })
+    } catch (e) {
+        console.error("Error: ", e)
     }
-    const aborted = abortByLaunchId(req.params.id)
-    return res.status(200).json(aborted)
+
 }
 module.exports = {
     httpGetAllLaunches,
