@@ -24,5 +24,8 @@
   "bugs": {
     "url": "https://github.com/agniadvani/KASA-Project/issues"
   },
-  "homepage": "https://github.com/agniadvani/KASA-Project#readme"
+  "homepage": "https://github.com/agniadvani/KASA-Project#readme",
+  "dependencies": {
+    "axios": "^0.27.2"
+  }
 }

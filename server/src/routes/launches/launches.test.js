@@ -21,7 +21,7 @@ describe('Laubches API', () => {
     describe('Test GET /launches', () => {
         test('It should respond with 200 success', async () => {
             await request(app)
-                .get("/launches")
+                .get("/v1/launches")
                 .expect("Content-Type", /json/)
                 .expect(200)
         })
@@ -41,7 +41,7 @@ describe('Laubches API', () => {
         }
         test('It should respond with 200 success', async () => {
             const response = await request(app)
-                .post("/launches")
+                .post("/v1/launches")
                 .send(launchDataWithDate)
                 .expect("Content-Type", /json/)
                 .expect(201)
@@ -52,7 +52,7 @@ describe('Laubches API', () => {
         })
         test('It should respond with 400 "Incomplete request body"', async () => {
             const response = await request(app)
-                .post("/launches")
+                .post("/v1/launches")
                 .send(launchDataWithoutDate)
                 .expect(400)
 
@@ -60,7 +60,7 @@ describe('Laubches API', () => {
         })
         test('It should respond with 400 "Invalid date format"', async () => {
             const response = await request(app)
-                .post("/launches")
+                .post("/v1/launches")
                 .send({
                     launchDate: "Decdsflkdfsjl",
                     mission: "ANIL1506",
