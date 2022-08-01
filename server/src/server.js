@@ -1,4 +1,5 @@
 const http = require('http')
+require('dotenv').config()
 const app = require('./app')
 const { mongoConnect } = require("./services/mongo")
 const { loadPlanetData } = require("./models/planets.model")
@@ -11,9 +12,9 @@ const server = http.createServer(app)
 
 async function listen() {
     try {
-        await loadLaunchData()
         await mongoConnect()
         await loadPlanetData()
+        await loadLaunchData()
     } catch (e) {
         console.error("Could not load start up data " + e)
     }
