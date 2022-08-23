@@ -1,11 +1,12 @@
 const request = require("supertest")
 const app = require('../../app')
 const { mongoConnect, mongoDisconnect } = require("../../services/mongo")
-
+const { loadPlanetData } = require("../../models/planets.model")
 describe('Laubches API', () => {
     beforeAll(async () => {
         try {
             await mongoConnect()
+            await loadPlanetData()
         } catch (e) {
             console.log("Could not connect to mongoDB", e)
         }

@@ -6,12 +6,21 @@ on:
     branches: [main]
 jobs:
   build:
+    env:
+      CI: true
+      MONGO_URL: mongodb://localhost/kasa
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x]
+        mongo-version: ["4.4"]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Uses node js version 16
+      - name: Uses node js version ${{matrix.node-version}}
         uses: actions/setup-node@v2
         with:
-          node-version: 16
+          node-version: ${{matrix.node-version}}
+      - name: MongoDB in GitHub Actions
+        uses: supercharge/mongodb-github-action@1.7.0
       - run: npm install
       - run: npm run build --prefix client
